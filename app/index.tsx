@@ -1,12 +1,28 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text, Image, ImageBackground, Pressable } from "react-native";
+import React from "react";
+import { useTheme } from "@/context/ThemeContext";
 
 const Index = () => {
-  return (
-    <View className="flex-1 items-center justify-center bg-green-200">
-      <Text className='text-red-500'>Welcome to the GreenGarden</Text>
-    </View>
-  )
-}
+  const { colors, currentTheme, toggleTheme } = useTheme();
 
-export default Index
+  return (
+    <ImageBackground
+      source={colors.backgroundImage}
+      style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+    >
+
+      <Text style={{ color: colors.primary_text, fontSize: 20, fontWeight: "bold" }}>
+        {currentTheme === "dark" ? "Dark Mode" : "Light Mode"}
+      </Text>
+
+      <Pressable
+        onPress={toggleTheme}
+        style={{ backgroundColor: colors.accent, padding: 12, borderRadius: 8, marginTop: 20 }}
+      >
+        <Text style={{ color: "#fff", fontWeight: "bold" }}>Toggle Theme</Text>
+      </Pressable>
+    </ImageBackground>
+  );
+};
+
+export default Index;

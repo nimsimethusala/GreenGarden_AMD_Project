@@ -1,10 +1,13 @@
 import React from 'react'
 import { Slot } from 'expo-router'
 import '../global.css'
+import { ThemeProvider } from '@/context/ThemeContext'
 
 const RootLayout = () => {
   return (
-    <Slot />
+    <ThemeProvider>
+        <Slot />
+    </ThemeProvider>
   )
 }
 
