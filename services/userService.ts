@@ -1,6 +1,6 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db, storage } from "@/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { UserProfile, Role } from "@/types/User";
 
@@ -41,3 +41,10 @@ export const signup = async (options: {
   export const login = async (email: string, password: string) => {
     return signInWithEmailAndPassword(auth, email, password);
   };
+
+  // ========== GET A USER PROFILE ==========
+  export const getUser = async (uid: string): Promise<UserProfile | null> => {
+    const snap = await getDoc(doc(db, "users", uid));
+    return snap.exists() ? (snap.data() as UserProfile) : null;
+  };
+
