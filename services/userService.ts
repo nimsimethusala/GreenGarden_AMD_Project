@@ -1,6 +1,6 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db, storage } from "@/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { UserProfile, Role } from "@/types/User";
 
@@ -48,3 +48,19 @@ export const signup = async (options: {
     return snap.exists() ? (snap.data() as UserProfile) : null;
   };
 
+  // ========== UPDATE A USER PROFILE ==========
+  export const updateUser = async (uid: string, data: Partial<UserProfile>, avatarBlob?: Blob | null): Promise<void> => {
+    let updateData = { ...data };
+
+    // If user uploaded a new avatar
+    if (avatarBlob) {
+      const storageRef = ref(storage, `avatars/${uid}.jpg`);
+      await uploadBytes(storageRef, avatarBlob);
+      const photoURL = await getDownloadURL(storageRef);
+      updateData.photoURL = photoURL;
+    }
+
+    await updateDoc(doc(db, "users", uid), updateData);
+  };
+
+  
