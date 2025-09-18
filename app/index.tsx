@@ -1,5 +1,5 @@
 import { View, Text, ImageBackground, Pressable, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTheme } from "@/context/ThemeContext";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
@@ -23,7 +23,7 @@ const Index = () => {
           boxShadow: '0.5px 1px 2px 3px rgba(0, 5, 5, 0.3)',
           justifyContent: "center",
           alignItems: "center",
-          position: "relative", // important for absolutely positioning child
+          position: "relative",
         }}
       >
         
@@ -45,9 +45,9 @@ const Index = () => {
         }}
         >
         <Icon
-            name={currentTheme === "light" ? "dark-mode" : "light-mode"} // icon changes
+            name={currentTheme === "light" ? "dark-mode" : "light-mode"} 
             size={24}
-            color={currentTheme === "light" ? "#fff" : "#000"} // color changes
+            color={currentTheme === "light" ? "#fff" : "#000"}
         />
         </Pressable>
 
@@ -82,6 +82,7 @@ const Index = () => {
               marginTop: 30,
               boxShadow: currentTheme === "light" ? '0.5px 1px 9px 3px rgba(252, 104, 143, 0.6)' : '0.5px 1px 9px 3px rgba(6, 158, 119, 0.9)',
             }}
+          onPress={() => router.push("/login" as any)}
         >
           <Text style={{ color: "white", fontWeight: "600", fontSize: 16 }}>
             Get Started
