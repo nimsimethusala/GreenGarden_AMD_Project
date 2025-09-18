@@ -3,6 +3,7 @@ import {
   collection,
   updateDoc,
   deleteDoc,
+  onSnapshot,
   addDoc
 } from "firebase/firestore";
 import { db } from "@/firebase";
@@ -73,3 +74,23 @@ export const toggleFavorite = async (
   });
 };
 
+// SUBSCRIBE TO USER PLANTS
+export const subscribeUserPlants = (
+  userId: string,
+  callback: (plants: PlantDoc[]) => void,
+  errorCallback?: (err: any) => void
+) => {
+  return onSnapshot(
+    getUserPlantsRef(userId),
+    (snap) => {
+      const plants = snap.docs.map(
+        (doc) => ({ id: doc.id, ...doc.data() } as PlantDoc)
+      );
+      callback(plants);
+    },
+    (err) => {
+      if (errorCallback) errorCallback(err);
+      console.error("Plants subscription error:", err);
+    }
+  );
+};
