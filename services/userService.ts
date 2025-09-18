@@ -1,6 +1,6 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db, storage } from "@/firebase";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { UserProfile, Role } from "@/types/User";
 
@@ -68,4 +68,12 @@ export const signup = async (options: {
     const storageRef = ref(storage, `avatars/${uid}.jpg`);
     await deleteObject(storageRef).catch(() => {});
     await updateDoc(doc(db, "users", uid), { photoURL: null });
+  };
+
+  // ========== DELETE A USER ==========
+  export const deleteUser = async (uid: string): Promise<void> => {
+    // Delete avatar if exists
+    const storageRef = ref(storage, `avatars/${uid}.jpg`);
+    await deleteObject(storageRef).catch(() => {});
+    await deleteDoc(doc(db, "users", uid));
   };
