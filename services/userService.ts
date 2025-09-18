@@ -1,6 +1,6 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db, storage } from "@/firebase";
-import { deleteDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, setDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { UserProfile, Role } from "@/types/User";
 
@@ -76,4 +76,10 @@ export const signup = async (options: {
     const storageRef = ref(storage, `avatars/${uid}.jpg`);
     await deleteObject(storageRef).catch(() => {});
     await deleteDoc(doc(db, "users", uid));
+  };
+
+  // ========== GET ALL USERS ==========
+  export const getAllUsers = async (): Promise<UserProfile[]> => {
+    const snap = await getDocs(collection(db, "users"));
+    return snap.docs.map((doc) => doc.data() as UserProfile);
   };
