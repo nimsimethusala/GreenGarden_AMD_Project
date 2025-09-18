@@ -11,9 +11,12 @@ import {
 import ProfileImagePicker from "@/components/ProfileImagePicker";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useTheme } from "@/context/ThemeContext";
+import { signup } from "@/services/authService";
+import { useRouter } from "expo-router";
 
 export default function SignupScreen() {
   const { colors, currentTheme, toggleTheme } = useTheme();
+  const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -32,16 +35,35 @@ export default function SignupScreen() {
     if (!email.includes("@")) return "Enter a valid email address";
     if (password.length < 6) return "Password must be at least 6 characters";
     if (password !== confirmPassword) return "Passwords do not match";
+    if (!name.trim()) return "Name is required";
     return null;
   };
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     const error = validate();
     if (error) {
       Alert.alert("Validation Error", error);
       return;
     }
-    Alert.alert("Success", "All inputs are valid 🎉");
+
+    setLoading(true);
+    try {
+      await signup({
+        email,
+        password,
+        username: name,
+        avatarBlob,
+        role: "user",
+      });
+
+      Alert.alert("Success", "Account created successfully");
+      router.replace("/login");
+    } catch (err: any) {
+      console.error(err);
+      Alert.alert("Signup Error", err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,157 +73,190 @@ export default function SignupScreen() {
       resizeMode="cover"
     >
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <View style={{ padding: 20, justifyContent: "center", backgroundColor: currentTheme === "light" ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 15, 13, 0.9)", height: '80%', width: '90%', borderRadius: 20, boxShadow: '0.5px 1px 2px 3px rgba(0, 5, 5, 0.4)' }}>
-            {/* Dark Mode Toggle */}
-            <TouchableOpacity
+        <View
+          style={{
+            padding: 20,
+            justifyContent: "center",
+            backgroundColor:
+              currentTheme === "light"
+                ? "rgba(255, 255, 255, 0.9)"
+                : "rgba(0, 15, 13, 0.9)",
+            height: "80%",
+            width: "90%",
+            borderRadius: 20,
+            boxShadow: "0.5px 1px 2px 3px rgba(0, 5, 5, 0.4)",
+          }}
+        >
+          {/* Dark Mode Toggle */}
+          <TouchableOpacity
             onPress={toggleTheme}
             style={{
-                position: "absolute",
-                top: 20,
-                right: 20,
-                backgroundColor:
+              position: "absolute",
+              top: 20,
+              right: 20,
+              backgroundColor:
                 currentTheme === "light" ? "#0a7a2b" : "#74f7d5",
-                padding: 10,
-                borderRadius: 50,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 3 },
-                shadowOpacity: 0.3,
-                shadowRadius: 5,
-                elevation: 5,
+              padding: 10,
+              borderRadius: 50,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 3 },
+              shadowOpacity: 0.3,
+              shadowRadius: 5,
+              elevation: 5,
             }}
-            >
+          >
             <Icon
-                name={currentTheme === "light" ? "dark-mode" : "light-mode"}
-                size={22}
-                color={currentTheme === "light" ? "#fff" : "#000"}
+              name={currentTheme === "light" ? "dark-mode" : "light-mode"}
+              size={22}
+              color={currentTheme === "light" ? "#fff" : "#000"}
             />
-            </TouchableOpacity>
+          </TouchableOpacity>
 
-            {/* Profile Image */}
-            <ProfileImagePicker onImagePicked={onImagePicked} initialUri={null} />
+          {/* Profile Image */}
+          <ProfileImagePicker
+            onImagePicked={onImagePicked}
+            initialUri={null}
+          />
 
-            {/* Name */}
-            <TextInput
+          {/* Name */}
+          <TextInput
             placeholder="Name"
-            placeholderTextColor={currentTheme === "light" ? "#0a7a2b" : "#74f7d5"}
+            placeholderTextColor={
+              currentTheme === "light" ? "#0a7a2b" : "#74f7d5"
+            }
             value={name}
             onChangeText={setName}
             style={{
-                borderBottomWidth: 1,
-                borderBottomColor: currentTheme === "light" ? "#0a7a2b" : "#74f7d5",
-                marginTop: 36,
-                paddingVertical: 6,
-                color: currentTheme === "light" ? "#000" : "#fff",
+              borderBottomWidth: 1,
+              borderBottomColor:
+                currentTheme === "light" ? "#0a7a2b" : "#74f7d5",
+              marginTop: 36,
+              paddingVertical: 6,
+              color: currentTheme === "light" ? "#000" : "#fff",
             }}
-            />
+          />
 
-            {/* Email */}
-            <TextInput
+          {/* Email */}
+          <TextInput
             placeholder="Email"
-            placeholderTextColor={currentTheme === "light" ? "#0a7a2b" : "#74f7d5"}
+            placeholderTextColor={
+              currentTheme === "light" ? "#0a7a2b" : "#74f7d5"
+            }
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
             style={{
-                borderBottomWidth: 1,
-                borderBottomColor: currentTheme === "light" ? "#0a7a2b" : "#74f7d5",
-                marginTop: 22,
-                paddingVertical: 6,
-                color: currentTheme === "light" ? "#000" : "#fff",
+              borderBottomWidth: 1,
+              borderBottomColor:
+                currentTheme === "light" ? "#0a7a2b" : "#74f7d5",
+              marginTop: 22,
+              paddingVertical: 6,
+              color: currentTheme === "light" ? "#000" : "#fff",
             }}
-            />
+          />
 
-            {/* Password */}
-            <View
+          {/* Password */}
+          <View
             style={{
-                flexDirection: "row",
-                alignItems: "center",
-                borderBottomWidth: 1,
-                borderBottomColor: currentTheme === "light" ? "#0a7a2b" : "#74f7d5",
-                marginTop: 22,
+              flexDirection: "row",
+              alignItems: "center",
+              borderBottomWidth: 1,
+              borderBottomColor:
+                currentTheme === "light" ? "#0a7a2b" : "#74f7d5",
+              marginTop: 22,
             }}
-            >
+          >
             <TextInput
-                placeholder="Password"
-                placeholderTextColor={currentTheme === "light" ? "#0a7a2b" : "#74f7d5"}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-                style={{
+              placeholder="Password"
+              placeholderTextColor={
+                currentTheme === "light" ? "#0a7a2b" : "#74f7d5"
+              }
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              style={{
                 flex: 1,
                 paddingVertical: 6,
                 color: currentTheme === "light" ? "#000" : "#fff",
-                }}
+              }}
             />
             <TouchableOpacity
-                onPress={() => setShowPassword((v) => !v)}
-                style={{ padding: 8 }}
+              onPress={() => setShowPassword((v) => !v)}
+              style={{ padding: 8 }}
             >
-                <Icon
+              <Icon
                 name={showPassword ? "visibility-off" : "visibility"}
                 size={20}
-                color={currentTheme === "light" ? "#0a7a2b" : "#74f7d5"}
-                />
+                color={
+                  currentTheme === "light" ? "#0a7a2b" : "#74f7d5"
+                }
+              />
             </TouchableOpacity>
-            </View>
+          </View>
 
-            {/* Confirm Password */}
-            <View
+          {/* Confirm Password */}
+          <View
             style={{
-                flexDirection: "row",
-                alignItems: "center",
-                borderBottomWidth: 1,
-                borderBottomColor: currentTheme === "light" ? "#0a7a2b" : "#74f7d5",
-                marginTop: 22,
+              flexDirection: "row",
+              alignItems: "center",
+              borderBottomWidth: 1,
+              borderBottomColor:
+                currentTheme === "light" ? "#0a7a2b" : "#74f7d5",
+              marginTop: 22,
             }}
-            >
+          >
             <TextInput
-                placeholder="Confirm Password"
-                placeholderTextColor={currentTheme === "light" ? "#0a7a2b" : "#74f7d5"}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry={!showPassword}
-                style={{
+              placeholder="Confirm Password"
+              placeholderTextColor={
+                currentTheme === "light" ? "#0a7a2b" : "#74f7d5"
+              }
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry={!showPassword}
+              style={{
                 flex: 1,
                 paddingVertical: 6,
                 color: currentTheme === "light" ? "#000" : "#fff",
-                }}
+              }}
             />
             <TouchableOpacity
-                onPress={() => setShowPassword((v) => !v)}
-                style={{ padding: 8 }}
+              onPress={() => setShowPassword((v) => !v)}
+              style={{ padding: 8 }}
             >
-                <Icon
+              <Icon
                 name={showPassword ? "visibility-off" : "visibility"}
                 size={20}
-                color={currentTheme === "light" ? "#0a7a2b" : "#74f7d5"}
-                />
+                color={
+                  currentTheme === "light" ? "#0a7a2b" : "#74f7d5"
+                }
+              />
             </TouchableOpacity>
-            </View>
+          </View>
 
-            {/* Submit button */}
-            <TouchableOpacity
+          {/* Submit button */}
+          <TouchableOpacity
             onPress={handleSignup}
             style={{
-                marginTop: 44,
-                backgroundColor: currentTheme === "light" ? "#0a7a2b" : "#07b889",
-                padding: 14,
-                borderRadius: 8,
-                alignItems: "center",
+              marginTop: 44,
+              backgroundColor:
+                currentTheme === "light" ? "#0a7a2b" : "#07b889",
+              padding: 14,
+              borderRadius: 8,
+              alignItems: "center",
             }}
-            >
+            disabled={loading}
+          >
             {loading ? (
-                <ActivityIndicator color="#fff" />
+              <ActivityIndicator color="#fff" />
             ) : (
-                <Text style={{ color: "#fff", fontWeight: "600" }}>
+              <Text style={{ color: "#fff", fontWeight: "600" }}>
                 Create account
-                </Text>
+              </Text>
             )}
-            </TouchableOpacity>
+          </TouchableOpacity>
         </View>
-      </View>  
-      
+      </View>
     </ImageBackground>
   );
 }
