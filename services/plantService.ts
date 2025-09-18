@@ -59,3 +59,16 @@ export const deletePlant = async (userId: string, plantId: string) => {
   const docRef = doc(db, "users", userId, "plants", plantId);
   await deleteDoc(docRef);
 };
+
+// TOGGLE FAVORITE (only for admin plants)
+export const toggleFavorite = async (
+  userId: string,
+  plantId: string,
+  isFavorite: boolean
+) => {
+  const docRef = doc(db, "users", userId, "plants", plantId);
+  await updateDoc(docRef, {
+    isFavorite,
+    favoritesCount: isFavorite ? 1 : 0,
+  });
+};
