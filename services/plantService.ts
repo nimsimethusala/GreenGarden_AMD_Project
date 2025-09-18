@@ -72,3 +72,4 @@ export const toggleFavorite = async (
     favoritesCount: isFavorite ? 1 : 0,
   });
 };
+
