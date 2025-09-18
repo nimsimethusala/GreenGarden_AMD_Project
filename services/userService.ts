@@ -1,10 +1,10 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db, storage } from "@/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { UserProfile, Role } from "@/types/User";
 
-{/* Signup */}
+// ========== SIGN UP ==========
 export const signup = async (options: { 
     email: string; 
     password: string; 
@@ -36,3 +36,8 @@ export const signup = async (options: {
 
     return profile;
   }
+
+  // ========== LOGIN ==========
+  export const login = async (email: string, password: string) => {
+    return signInWithEmailAndPassword(auth, email, password);
+  };
