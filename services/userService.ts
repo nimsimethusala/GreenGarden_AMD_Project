@@ -1,7 +1,7 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db, storage } from "@/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { UserProfile, Role } from "@/types/User";
 
 // ========== SIGN UP ==========
@@ -63,4 +63,9 @@ export const signup = async (options: {
     await updateDoc(doc(db, "users", uid), updateData);
   };
 
-  
+  // ========== REMOVE AVATAR ==========
+  export const removeAvatar = async (uid: string): Promise<void> => {
+    const storageRef = ref(storage, `avatars/${uid}.jpg`);
+    await deleteObject(storageRef).catch(() => {});
+    await updateDoc(doc(db, "users", uid), { photoURL: null });
+  };
