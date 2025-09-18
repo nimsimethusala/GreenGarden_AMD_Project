@@ -1,5 +1,7 @@
 import {
+  doc,
   collection,
+  updateDoc,
   addDoc
 } from "firebase/firestore";
 import { db } from "@/firebase";
@@ -26,5 +28,27 @@ export const createPlant = async (plant: Partial<PlantDoc>) => {
     favoritesCount: isAdmin ? 0 : null, // only admin plants track favorites
     visibility: isAdmin ? "public" : "private",
     createdAt: new Date(),
+  });
+};
+
+// Update an existing plant
+export const updatePlant = async (
+  userId: string,
+  plantId: string,
+  data: Partial<PlantDoc>
+) => {
+  if (!data.plantName) throw new Error("Plant name is required");
+  if (!data.images || data.images.length === 0)
+    throw new Error("Image is required");
+
+  const docRef = doc(db, "users", userId, "plants", plantId);
+
+  const isAdmin = data.createdByRole === "admin";
+
+  await updateDoc(docRef, {
+    plantName: data.plantName,
+    description: isAdmin ? data.description || "" : null,
+    images: data.images,
+    updatedAt: new Date(),
   });
 };
