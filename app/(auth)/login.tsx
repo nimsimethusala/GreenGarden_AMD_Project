@@ -13,6 +13,9 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
 import { useTheme } from "@/context/ThemeContext";
 import { login } from "@/services/authService";
+import { UserProfile } from "@/types/User";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/firebase";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -22,25 +25,44 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const { colors, currentTheme, toggleTheme } = useTheme();
 
-  const handleLogin = async () => {
+    const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert("Error", "Please fill in both fields");
-      return;
+        Alert.alert("Error", "Please fill in both fields");
+        return;
     }
 
     setLoading(true);
     try {
-      await login(email, password);
+        // 1. Sign in with Firebase
+        const userCredential = await login(email, password);
+        const uid = userCredential.user.uid;
 
-      Alert.alert("Success", "Logged in successfully");
-      router.replace("/"); 
+        // 2. Fetch user profile from Firestore
+        const userDocRef = doc(db, "users", uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (!userDocSnap.exists()) {
+        throw new Error("User profile not found");
+        }
+
+        const user = userDocSnap.data() as UserProfile;
+
+        Alert.alert("Success", "Logged in successfully");
+
+        // 3. Role-based redirection
+        if (user.role === "admin") {
+        router.replace("/admin");
+        } else {
+        router.replace("/home");
+        }
+
     } catch (err: any) {
-      console.error("Login error:", err);
-      Alert.alert("Login Failed", err.message || "Something went wrong");
+        console.error("Login error:", err);
+        Alert.alert("Login Failed", err.message || "Something went wrong");
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+    };
 
   return (
     <ImageBackground
