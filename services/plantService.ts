@@ -2,6 +2,7 @@ import {
   doc,
   collection,
   updateDoc,
+  deleteDoc,
   addDoc
 } from "firebase/firestore";
 import { db } from "@/firebase";
@@ -51,4 +52,10 @@ export const updatePlant = async (
     images: data.images,
     updatedAt: new Date(),
   });
+};
+
+// Delete an existing plant
+export const deletePlant = async (userId: string, plantId: string) => {
+  const docRef = doc(db, "users", userId, "plants", plantId);
+  await deleteDoc(docRef);
 };
