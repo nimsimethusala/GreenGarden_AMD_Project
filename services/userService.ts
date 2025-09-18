@@ -83,3 +83,25 @@ export const signup = async (options: {
     const snap = await getDocs(collection(db, "users"));
     return snap.docs.map((doc) => doc.data() as UserProfile);
   };
+
+  // ========== ADD A NEW USER (ADMIN) ==========
+  export const addUser = async (profile: UserProfile, avatarBlob?: Blob | null): Promise<void> => {
+    let photoURL: string | null = null;
+
+    if (avatarBlob) {
+      const storageRef = ref(storage, `avatars/${profile.id}.jpg`);
+      await uploadBytes(storageRef, avatarBlob);
+      photoURL = await getDownloadURL(storageRef);
+    }
+
+    const finalProfile: UserProfile = {
+      ...profile,
+      photoURL: photoURL ?? profile.photoURL ?? null,
+    };
+
+    if (profile.id) {
+      await setDoc(doc(db, "users", profile.id), finalProfile);
+    } else {
+      console.error("Profile ID is missing or invalid.");
+    }
+  };
