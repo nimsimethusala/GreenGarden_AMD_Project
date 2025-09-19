@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, Image, TextInput } from "react-native";
-import { Feather, MaterialIcons } from "@expo/vector-icons";
+import PlantForm from "@/components/UserPlantForm";
 import { useAuth } from "@/context/AuthContext";
 import { useLoader } from "@/context/LoaderContext";
-import PlantForm from "@/components/PlantForm";
+import { deletePlant, subscribeUserPlants, toggleFavorite } from "@/services/plantService";
 import { PlantDoc } from "@/types/Plant";
-import { subscribeUserPlants, deletePlant, toggleFavorite } from "@/services/plantService";
+import { Feather, MaterialIcons } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
+import { Alert, FlatList, Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 const PlantScreen = () => {
   const { user } = useAuth();
@@ -50,11 +50,23 @@ const PlantScreen = () => {
     setIsFormVisible(true);
   };
 
-  const handleDelete = async (plantId: string) => {
+  const handleDelete = async (plant: PlantDoc) => {
     if (!user?.id) return;
+
+    // Only allow deleting user's own plants
+    if (plant.createdBy !== user.id) {
+      return Alert.alert("Error", "You can only delete your own plants.");
+    }
+
     showLoader();
-    await deletePlant(user.id, plantId);
-    hideLoader();
+    try {
+      await deletePlant(plant); // pass the whole plant object
+    } catch (err) {
+      console.log("Delete failed:", err);
+      Alert.alert("Error", "Failed to delete plant.");
+    } finally {
+      hideLoader();
+    }
   };
 
   const handleToggleFavorite = async (plant: PlantDoc) => {
@@ -121,7 +133,7 @@ const PlantScreen = () => {
             >
               <Feather name="edit-2" size={20} color="#fbbf24" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleDelete(item.id!)}>
+            <TouchableOpacity onPress={() => handleDelete(item)}>
               <Feather name="trash-2" size={20} color="#ef4444" />
             </TouchableOpacity>
           </View>
