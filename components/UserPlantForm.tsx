@@ -31,20 +31,15 @@ const PlantForm: React.FC<PlantFormProps> = ({
   const isNew = !editingPlant;
 
   const [plantName, setPlantName] = useState("");
-  const [description, setDescription] = useState("");
   const [image, setImage] = useState<string | null>(null);
-
-  const isAdmin = user?.role === "admin"; // check role
 
   useEffect(() => {
     if (visible) {
       if (editingPlant) {
         setPlantName(editingPlant.plantName);
-        setDescription(editingPlant.description || "");
         setImage(editingPlant.images?.[0] || null);
       } else {
         setPlantName("");
-        setDescription("");
         setImage(null);
       }
     }
@@ -70,17 +65,14 @@ const PlantForm: React.FC<PlantFormProps> = ({
       if (isNew) {
         await createPlant({
           plantName,
-          description: isAdmin ? description : undefined,
           images: [image],
           createdBy: user.id,
-          createdByRole: isAdmin ? "admin" : "user",
+          createdByRole: "user",
         });
       } else {
-        await updatePlant(user.id, editingPlant!.id!, {
+        await updatePlant(editingPlant!, {
           plantName,
-          description: isAdmin ? description : undefined,
           images: [image],
-          createdByRole: isAdmin ? "admin" : "user",
         });
       }
 
@@ -136,42 +128,17 @@ const PlantForm: React.FC<PlantFormProps> = ({
           {/* Plant Name */}
           <RNTextInput
             placeholder="Plant Name"
-            placeholderTextColor={
-              currentTheme === "light" ? "#0a7a2b" : "#c3f7ef"
-            }
+            placeholderTextColor={currentTheme === "light" ? "#0a7a2b" : "#c3f7ef"}
             value={plantName}
             onChangeText={setPlantName}
             style={{
               borderBottomWidth: 1,
-              borderBottomColor:
-                currentTheme === "light" ? "#0a7a2b" : "#c3f7ef",
+              borderBottomColor: currentTheme === "light" ? "#0a7a2b" : "#c3f7ef",
               marginBottom: 16,
               color: currentTheme === "light" ? "#000" : "#fff",
               paddingVertical: 6,
             }}
           />
-
-          {/* Description (only admin can see & edit) */}
-          {isAdmin && (
-            <RNTextInput
-              placeholder="Description"
-              placeholderTextColor={
-                currentTheme === "light" ? "#0a7a2b" : "#c3f7ef"
-              }
-              value={description}
-              onChangeText={setDescription}
-              multiline
-              numberOfLines={3}
-              style={{
-                borderBottomWidth: 1,
-                borderBottomColor:
-                  currentTheme === "light" ? "#0a7a2b" : "#c3f7ef",
-                marginBottom: 16,
-                color: currentTheme === "light" ? "#000" : "#fff",
-                paddingVertical: 6,
-              }}
-            />
-          )}
 
           {/* Submit Button */}
           <TouchableOpacity
