@@ -1,5 +1,5 @@
 import { db } from "@/firebase";
-import { collection, doc, setDoc, query, orderBy, getDocs, deleteDoc } from "firebase/firestore";
+import { collection, doc, setDoc, query, orderBy, getDocs, deleteDoc, updateDoc } from "firebase/firestore";
 import { CategoryDoc } from "@/types/Category";
 
 const categoryCollection = collection(db, "categories");
@@ -27,4 +27,12 @@ export const getAllCategories = async (): Promise<CategoryDoc[]> => {
 // ========== DELETE A CATEGORY ==========
 export const deleteCategory = async (id: string): Promise<void> => {
   await deleteDoc(doc(db, "categories", id));
+};
+
+// ========== UPDATE A CATEGORY ==========
+export const updateCategory = async (id: string, data: Partial<CategoryDoc>): Promise<void> => {
+  await updateDoc(doc(db, "categories", id), {
+    ...data,
+    updatedAt: new Date(),
+  });
 };
