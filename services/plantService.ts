@@ -4,7 +4,8 @@ import {
   updateDoc,
   deleteDoc,
   onSnapshot,
-  addDoc
+  addDoc,
+  setDoc,
 } from "firebase/firestore";
 import { db } from "@/firebase";
 import { PlantDoc } from "@/types/Plant";
@@ -21,7 +22,6 @@ export const createPlant = async (plant: Partial<PlantDoc>) => {
     throw new Error("Image is required");
 
   const ref = getUserPlantsRef(plant.createdBy);
-
   const isAdmin = plant.createdByRole === "admin";
 
   await addDoc(ref, {
@@ -33,7 +33,7 @@ export const createPlant = async (plant: Partial<PlantDoc>) => {
   });
 };
 
-// Update an existing plant
+// Update an existing plant safely (creates if missing)
 export const updatePlant = async (
   plant: PlantDoc,
   data: Partial<PlantDoc>
@@ -46,49 +46,47 @@ export const updatePlant = async (
   if (data.images !== undefined && data.images.length === 0)
     throw new Error("Image is required");
 
-  let docRef;
+  const plantDocRef =
+    plant.createdByRole === "admin"
+      ? doc(db, "plants", plant.id)
+      : doc(db, "users", plant.createdBy, "plants", plant.id);
 
-  if (plant.createdByRole === "admin") {
-    docRef = doc(db, "plants", plant.id);
-  } else {
-    docRef = doc(db, "users", plant.createdBy, "plants", plant.id);
-  }
-
-  await updateDoc(docRef, {
-    ...data,
-    updatedAt: new Date(),
-  });
+  await setDoc(
+    plantDocRef,
+    {
+      ...data,
+      updatedAt: new Date(),
+    },
+    { merge: true } 
+  );
 };
 
 // Delete an existing plant
 export const deletePlant = async (plant: PlantDoc) => {
   if (!plant.id) throw new Error("Plant ID is required");
 
-  let docRef;
+  const plantDocRef =
+    plant.createdByRole === "admin"
+      ? doc(db, "plants", plant.id)
+      : doc(db, "users", plant.createdBy, "plants", plant.id);
 
-  if (plant.createdByRole === "admin") {
-    docRef = doc(db, "plants", plant.id);
-  } else {
-    docRef = doc(db, "users", plant.createdBy, "plants", plant.id);
-  }
-
-  await deleteDoc(docRef);
+  await deleteDoc(plantDocRef);
 };
 
-// TOGGLE FAVORITE (only for admin plants)
+// Toggle favorite (admin plants)
 export const toggleFavorite = async (
   userId: string,
   plantId: string,
   isFavorite: boolean
 ) => {
-  const docRef = doc(db, "users", userId, "plants", plantId);
-  await updateDoc(docRef, {
+  const plantDocRef = doc(db, "users", userId, "plants", plantId);
+  await updateDoc(plantDocRef, {
     isFavorite,
     favoritesCount: isFavorite ? 1 : 0,
   });
 };
 
-// SUBSCRIBE TO USER PLANTS
+// Subscribe to user plants
 export const subscribeUserPlants = (
   userId: string,
   callback: (plants: PlantDoc[]) => void,
@@ -109,12 +107,12 @@ export const subscribeUserPlants = (
   );
 };
 
-// SUBSCRIBE TO ALL PLANTS (for admin)
+// Subscribe to all plants (admin)
 export const subscribeAllPlants = (
   callback: (plants: PlantDoc[]) => void,
   errorCallback?: (err: any) => void
 ) => {
-  const ref = collection(db, "plants"); // 🔹 Global plants for admin
+  const ref = collection(db, "plants"); // global admin plants
 
   return onSnapshot(
     ref,
