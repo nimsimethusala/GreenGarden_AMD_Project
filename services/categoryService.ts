@@ -1,5 +1,5 @@
 import { db } from "@/firebase";
-import { collection, doc, setDoc, query, orderBy, getDocs, deleteDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, setDoc, query, orderBy, getDocs, deleteDoc, updateDoc, getDoc } from "firebase/firestore";
 import { CategoryDoc } from "@/types/Category";
 
 const categoryCollection = collection(db, "categories");
@@ -35,4 +35,10 @@ export const updateCategory = async (id: string, data: Partial<CategoryDoc>): Pr
     ...data,
     updatedAt: new Date(),
   });
+};
+
+// ========== GET A CATEGORY BY ID ==========
+export const getCategory = async (id: string): Promise<CategoryDoc | null> => {
+  const snap = await getDoc(doc(db, "categories", id));
+  return snap.exists() ? (snap.data() as CategoryDoc) : null;
 };
