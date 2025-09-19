@@ -27,7 +27,7 @@ export const createPlant = async (plant: Partial<PlantDoc>) => {
   await addDoc(ref, {
     ...plant,
     description: isAdmin ? plant.description || "" : null,
-    favoritesCount: isAdmin ? 0 : null, // only admin plants track favorites
+    favoritesCount: isAdmin ? 0 : null,
     visibility: isAdmin ? "public" : "private",
     createdAt: new Date(),
   });
@@ -35,29 +35,43 @@ export const createPlant = async (plant: Partial<PlantDoc>) => {
 
 // Update an existing plant
 export const updatePlant = async (
-  userId: string,
-  plantId: string,
+  plant: PlantDoc,
   data: Partial<PlantDoc>
 ) => {
-  if (!data.plantName) throw new Error("Plant name is required");
-  if (!data.images || data.images.length === 0)
+  if (!plant.id) throw new Error("Plant ID is required");
+
+  if (data.plantName !== undefined && data.plantName.trim() === "")
+    throw new Error("Plant name is required");
+
+  if (data.images !== undefined && data.images.length === 0)
     throw new Error("Image is required");
 
-  const docRef = doc(db, "users", userId, "plants", plantId);
+  let docRef;
 
-  const isAdmin = data.createdByRole === "admin";
+  if (plant.createdByRole === "admin") {
+    docRef = doc(db, "plants", plant.id);
+  } else {
+    docRef = doc(db, "users", plant.createdBy, "plants", plant.id);
+  }
 
   await updateDoc(docRef, {
-    plantName: data.plantName,
-    description: isAdmin ? data.description || "" : null,
-    images: data.images,
+    ...data,
     updatedAt: new Date(),
   });
 };
 
 // Delete an existing plant
-export const deletePlant = async (userId: string, plantId: string) => {
-  const docRef = doc(db, "users", userId, "plants", plantId);
+export const deletePlant = async (plant: PlantDoc) => {
+  if (!plant.id) throw new Error("Plant ID is required");
+
+  let docRef;
+
+  if (plant.createdByRole === "admin") {
+    docRef = doc(db, "plants", plant.id);
+  } else {
+    docRef = doc(db, "users", plant.createdBy, "plants", plant.id);
+  }
+
   await deleteDoc(docRef);
 };
 
@@ -91,6 +105,28 @@ export const subscribeUserPlants = (
     (err) => {
       if (errorCallback) errorCallback(err);
       console.error("Plants subscription error:", err);
+    }
+  );
+};
+
+// SUBSCRIBE TO ALL PLANTS (for admin)
+export const subscribeAllPlants = (
+  callback: (plants: PlantDoc[]) => void,
+  errorCallback?: (err: any) => void
+) => {
+  const ref = collection(db, "plants"); // 🔹 Global plants for admin
+
+  return onSnapshot(
+    ref,
+    (snap) => {
+      const plants = snap.docs.map(
+        (doc) => ({ id: doc.id, ...doc.data() } as PlantDoc)
+      );
+      callback(plants);
+    },
+    (err) => {
+      if (errorCallback) errorCallback(err);
+      console.error("All plants subscription error:", err);
     }
   );
 };
