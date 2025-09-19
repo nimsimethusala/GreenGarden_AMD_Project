@@ -1,5 +1,15 @@
 import { db } from "@/firebase";
-import { collection, doc, setDoc, query, orderBy, getDocs, deleteDoc, updateDoc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  setDoc,
+  query,
+  orderBy,
+  getDocs,
+  deleteDoc,
+  updateDoc,
+  getDoc,
+} from "firebase/firestore";
 import { CategoryDoc } from "@/types/Category";
 
 const categoryCollection = collection(db, "categories");
@@ -13,7 +23,11 @@ export const addCategory = async (category: CategoryDoc): Promise<void> => {
     updatedAt: now,
   };
 
-  const categoryRef = category.id ? doc(db, "categories", category.id) : doc(categoryCollection);
+  // Generate ID if not provided
+  const categoryRef = category.id
+    ? doc(db, "categories", category.id)
+    : doc(categoryCollection);
+
   await setDoc(categoryRef, newCategory);
 };
 
@@ -21,7 +35,11 @@ export const addCategory = async (category: CategoryDoc): Promise<void> => {
 export const getAllCategories = async (): Promise<CategoryDoc[]> => {
   const q = query(categoryCollection, orderBy("createdAt", "desc"));
   const snap = await getDocs(q);
-  return snap.docs.map((doc) => ({ id: doc.id, ...(doc.data() as CategoryDoc) }));
+
+  return snap.docs.map((d) => ({
+    id: d.id,
+    ...(d.data() as CategoryDoc),
+  }));
 };
 
 // ========== DELETE A CATEGORY ==========
@@ -30,7 +48,10 @@ export const deleteCategory = async (id: string): Promise<void> => {
 };
 
 // ========== UPDATE A CATEGORY ==========
-export const updateCategory = async (id: string, data: Partial<CategoryDoc>): Promise<void> => {
+export const updateCategory = async (
+  id: string,
+  data: Partial<CategoryDoc>
+): Promise<void> => {
   await updateDoc(doc(db, "categories", id), {
     ...data,
     updatedAt: new Date(),
@@ -40,5 +61,7 @@ export const updateCategory = async (id: string, data: Partial<CategoryDoc>): Pr
 // ========== GET A CATEGORY BY ID ==========
 export const getCategory = async (id: string): Promise<CategoryDoc | null> => {
   const snap = await getDoc(doc(db, "categories", id));
-  return snap.exists() ? (snap.data() as CategoryDoc) : null;
+  return snap.exists()
+    ? { id: snap.id, ...(snap.data() as CategoryDoc) }
+    : null;
 };
