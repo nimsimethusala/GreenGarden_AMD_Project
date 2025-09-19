@@ -1,5 +1,5 @@
 import { db } from "@/firebase";
-import { collection, doc, setDoc, query, orderBy, getDocs } from "firebase/firestore";
+import { collection, doc, setDoc, query, orderBy, getDocs, deleteDoc } from "firebase/firestore";
 import { CategoryDoc } from "@/types/Category";
 
 const categoryCollection = collection(db, "categories");
@@ -22,4 +22,9 @@ export const getAllCategories = async (): Promise<CategoryDoc[]> => {
   const q = query(categoryCollection, orderBy("createdAt", "desc"));
   const snap = await getDocs(q);
   return snap.docs.map((doc) => ({ id: doc.id, ...(doc.data() as CategoryDoc) }));
+};
+
+// ========== DELETE A CATEGORY ==========
+export const deleteCategory = async (id: string): Promise<void> => {
+  await deleteDoc(doc(db, "categories", id));
 };
