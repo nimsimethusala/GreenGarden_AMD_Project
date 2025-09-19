@@ -11,7 +11,7 @@ import { createPlant, updatePlant } from "@/services/plantService";
 import { useAuth } from "@/context/AuthContext";
 import { useLoader } from "@/context/LoaderContext";
 import { PlantDoc } from "@/types/Plant";
-import PlantImagePicker from "./PlantImagePicker";
+import PlantImagePicker from "../PlantImagePicker";
 
 interface PlantFormProps {
   visible: boolean;
