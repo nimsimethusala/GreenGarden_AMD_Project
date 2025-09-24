@@ -20,6 +20,7 @@ import { getApp } from "firebase/app";
 import { UserProfile } from "@/types/User";
 import { getUser, updateUser, removeAvatar } from "@/services/userService";
 import HeaderSection from "@/components/section/HeaderSection";
+import { logout } from "@/services/authService";
 
 const ProfileScreen = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -192,7 +193,7 @@ const ProfileScreen = () => {
   const handleLogout = () => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Logout", style: "destructive", onPress: async () => await auth.signOut() },
+      { text: "Logout", style: "destructive", onPress: async () => await logout() },
     ]);
   };
 
