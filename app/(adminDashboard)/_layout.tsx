@@ -3,10 +3,9 @@ import { Tabs } from 'expo-router'
 import { MaterialIcons } from "@expo/vector-icons"
 
 const tabs = [
-    {label: 'Home', name: 'admin', icon: "home-filled"},
     {label: 'Plants', name: 'adminPlantScreen', icon: "local-florist"},
     {label: 'Categories', name: 'categoryScreen', icon: "category"},
-    // {label: 'Profile', name: 'userProfile', icon: "person" }
+    {label: 'Profile', name: 'adminProfile', icon: "person" }
 ] as const
 
 const UserDashboardRoutes = () => {
