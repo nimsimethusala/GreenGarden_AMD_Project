@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "GreenGarden_AMD_Project",
+    "name": "GreenGarden",
     "slug": "GreenGarden_AMD_Project",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/GreenGarden.jpeg",
+    "icon": "./assets/GreenGarden.jpg",
     "scheme": "greengardenamdproject",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -18,9 +18,9 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/GreenGarden.jpeg",
-        "backgroundImage": "./assets/GreenGarden.jpeg",
-        "monochromeImage": "./assets/GreenGarden.jpeg"
+        "foregroundImage": "./assets/GreenGarden.jpg",
+        "backgroundImage": "./assets/GreenGarden.jpg",
+        "monochromeImage": "./assets/GreenGarden.jpg"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
@@ -38,14 +38,14 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/GreenGarden.jpeg"
+      "favicon": "./assets/GreenGarden.jpg"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/android-icon-foreground.jpeg",
+          "image": "./assets/GreenGarden.jpg",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",

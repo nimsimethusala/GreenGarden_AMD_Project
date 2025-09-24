@@ -21,8 +21,10 @@ import { UserProfile } from "@/types/User";
 import { getUser, updateUser, removeAvatar } from "@/services/userService";
 import HeaderSection from "@/components/section/HeaderSection";
 import { logout } from "@/services/authService";
+import { useRouter } from "expo-router";
 
 const ProfileScreen = () => {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [editForm, setEditForm] = useState({
@@ -193,7 +195,14 @@ const ProfileScreen = () => {
   const handleLogout = () => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Logout", style: "destructive", onPress: async () => await logout() },
+      { 
+        text: "Logout", 
+        style: "destructive", 
+        onPress: async () => {
+          await logout();
+          router.replace("/"); 
+        } 
+      },
     ]);
   };
 

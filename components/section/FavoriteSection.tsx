@@ -107,12 +107,6 @@ export default function FavoriteScreen() {
             <Text style={[styles.emptyStateText, { color: colors.secondary_text }]}>
               Plants you mark as favorite will appear here
             </Text>
-            <TouchableOpacity 
-              style={[styles.exploreButton, { backgroundColor: colors.accent }]}
-              onPress={() => {/* Navigate to plants page */}}
-            >
-              <Text style={styles.exploreButtonText}>Explore Plants</Text>
-            </TouchableOpacity>
           </View>
         ) : (
           <View style={styles.content}>
@@ -211,7 +205,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 40,
-    paddingTop: 100,
+    paddingTop: 50,
   },
   emptyStateTitle: {
     fontSize: 24,

@@ -139,7 +139,7 @@ const CategoryScreen = () => {
 
       {/* Add Button */}
       <TouchableOpacity
-        style={[styles.fab, { backgroundColor: colors.accent }]}
+        style={[styles.fab, { backgroundColor: colors.secondary_text }]}
         onPress={() => {
           setEditingCategory(null);
           setIsFormVisible(true);
