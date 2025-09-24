@@ -6,27 +6,30 @@ import {
   TouchableOpacity,
   Alert,
   StyleSheet,
+  ScrollView,
 } from "react-native";
 import { MaterialIcons, Feather } from "@expo/vector-icons";
 import { useAuth } from "@/context/AuthContext";
 import { useLoader } from "@/context/LoaderContext";
+import { useTheme } from "@/context/ThemeContext";
 import {
   getAllCategories,
   deleteCategory,
 } from "@/services/categoryService";
 import { CategoryDoc } from "@/types/Category";
 import CategoryForm from "@/components/form/CategoryForm";
+import HeaderSection from "@/components/section/HeaderSection";
 
 const CategoryScreen = () => {
   const { user } = useAuth();
   const { showLoader, hideLoader } = useLoader();
+  const { colors, currentTheme, toggleTheme } = useTheme();
 
   const [categories, setCategories] = useState<CategoryDoc[]>([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [editingCategory, setEditingCategory] = useState<CategoryDoc | null>(
     null
   );
-  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
 
   // Load categories
   const loadCategories = async () => {
@@ -36,6 +39,7 @@ const CategoryScreen = () => {
       setCategories(data);
     } catch (err) {
       console.error("Failed to fetch categories:", err);
+      Alert.alert("Error", "Failed to load categories");
     } finally {
       hideLoader();
     }
@@ -73,156 +77,190 @@ const CategoryScreen = () => {
   };
 
   const renderCategoryCard = ({ item }: { item: CategoryDoc }) => (
-    <View
-      style={[
-        styles.card,
-        { backgroundColor: currentTheme === "light" ? "#fff" : "#374151" },
-      ]}
-    >
-      <Text
-        style={[
-          styles.cardTitle,
-          { color: currentTheme === "light" ? "#065f46" : "#d1fae5" },
-        ]}
-      >
-        {item.name}
-      </Text>
+    <View style={[styles.card, { backgroundColor: colors.card_background }]}>
+      <View style={styles.cardContent}>
+        <MaterialIcons name="category" size={24} color={colors.accent} style={styles.categoryIcon} />
+        <View style={styles.cardInfo}>
+          <Text style={[styles.cardTitle, { color: colors.primary_text }]}>
+            {item.name}
+          </Text>
+        </View>
+      </View>
+      
       <View style={styles.cardActions}>
-        <TouchableOpacity onPress={() => handleEdit(item)} style={styles.iconButton}>
-          <Feather name="edit-2" size={20} color="#fbbf24" />
+        <TouchableOpacity 
+          onPress={() => handleEdit(item)} 
+          style={[styles.actionButton, { backgroundColor: colors.secondary_text + "20" }]}
+        >
+          <Feather name="edit-2" size={18} color={colors.secondary_text} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleDelete(item.id!)} style={styles.iconButton}>
-          <Feather name="trash-2" size={20} color="#ef4444" />
+        <TouchableOpacity 
+          onPress={() => handleDelete(item.id!)} 
+          style={[styles.actionButton, { backgroundColor: '#ff4444' + "20", marginLeft: 8 }]}
+        >
+          <Feather name="trash-2" size={18} color="#ff4444" />
         </TouchableOpacity>
       </View>
     </View>
   );
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: currentTheme === "light" ? "#f0fdf4" : "#1f2937" },
-      ]}
-    >
-
-    {/* Screen Header */}
-    <View style={styles.headerWrapper}>
-        <Text
-            style={[
-            styles.header,
-            { color: currentTheme === "light" ? "#065f46" : "#d1fae5" },
-            ]}
-        >
-            Manage Categories
+    <View style={[styles.container, { backgroundColor: colors.primary_background }]}>
+      {/* Header Section */}
+      <HeaderSection title="Categories" showThemeToggle={true} />
+      
+      {/* Categories Count */}
+      <View style={styles.countContainer}>
+        <Text style={[styles.countText, { color: colors.secondary_text }]}>
+          {categories.length} {categories.length === 1 ? 'category' : 'categories'} total
         </Text>
-    </View>
+      </View>
 
-    {/* Theme Toggle Button */}
-    <View style={styles.toggleWrapper}>
-        <TouchableOpacity
-            style={styles.themeToggle}
-            onPress={() =>
-            setCurrentTheme(currentTheme === "light" ? "dark" : "light")
-            }
-        >
-            {currentTheme === "light" ? (
-            <Feather name="moon" size={22} color="#374151" />
-            ) : (
-            <Feather name="sun" size={22} color="#fbbf24" />
-            )}
-        </TouchableOpacity>
-    </View>
+      {/* Categories List */}
+      {categories.length === 0 ? (
+        <View style={styles.emptyState}>
+          <MaterialIcons name="category" size={80} color={colors.secondary_text + "50"} />
+          <Text style={[styles.emptyTitle, { color: colors.primary_text }]}>
+            No Categories Yet
+          </Text>
+          <Text style={[styles.emptyText, { color: colors.secondary_text }]}>
+            Start by adding your first category to organize plants
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={categories}
+          keyExtractor={(item) => item.id!}
+          renderItem={renderCategoryCard}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
 
-
-      <FlatList
-        data={categories}
-        keyExtractor={(item) => item.id!}
-        renderItem={renderCategoryCard}
-        contentContainerStyle={{ paddingBottom: 100 }}
-      />
-
+      {/* Add Button */}
       <TouchableOpacity
-        style={styles.fab}
+        style={[styles.fab, { backgroundColor: colors.accent }]}
         onPress={() => {
           setEditingCategory(null);
           setIsFormVisible(true);
         }}
       >
-        <MaterialIcons name="add" size={30} color="#fff" />
+        <Feather name="plus" size={24} color="#fff" />
       </TouchableOpacity>
 
+      {/* Category Form Modal */}
       <CategoryForm
         visible={isFormVisible}
         onClose={() => {
           setIsFormVisible(false);
+          setEditingCategory(null);
           loadCategories();
         }}
         editingCategory={editingCategory}
-        currentTheme={currentTheme}
       />
     </View>
   );
 };
 
-export default CategoryScreen;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 10,
   },
-  headerWrapper: {
-    marginVertical: 30,
-    marginHorizontal: 10,
-    alignItems: "center", // center text horizontally
+  countContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
-  header: {
-    fontSize: 28,
-    fontWeight: "bold",
+  countText: {
+    fontSize: 14,
+    fontWeight: "500",
   },
-  toggleWrapper: {
-    position: "absolute",
-    top: 30,
-    right: 20,
-  },
-  themeToggle: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: "#e5e7eb",
+  listContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   card: {
-    padding: 15,
-    borderRadius: 12,
-    marginVertical: 6,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
     shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cardContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  categoryIcon: {
+    marginRight: 12,
+  },
+  cardInfo: {
+    flex: 1,
   },
   cardTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "600",
+    marginBottom: 4,
+  },
+  cardSubtitle: {
+    fontSize: 12,
+    opacity: 0.7,
   },
   cardActions: {
     flexDirection: "row",
   },
-  iconButton: {
-    marginLeft: 12,
+  actionButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 40,
+  },
+  emptyTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+    marginTop: 20,
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  emptyText: {
+    fontSize: 16,
+    textAlign: "center",
+    lineHeight: 22,
+    opacity: 0.8,
   },
   fab: {
     position: "absolute",
     bottom: 30,
     right: 30,
-    backgroundColor: "#10b981",
     width: 60,
     height: 60,
     borderRadius: 30,
     alignItems: "center",
     justifyContent: "center",
     elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
 });
+
+export default CategoryScreen;
