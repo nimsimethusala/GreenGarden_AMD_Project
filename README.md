@@ -1,52 +1,52 @@
-GreenGarden - Mobile App
+# GreenGarden - Mobile App
 
-Project: GreenGarden (Expo / React Native)
-
-
-Quick links
-
-YouTube demo: [YOUTUBE_VIDEO_URL]
-
-APK download: [APK_DOWNLOAD_URL]
+### Project: GreenGarden (Expo / React Native)
 
 
-About
+## Quick links
+
+   #### YouTube demo: [YOUTUBE_VIDEO_URL]
+
+   #### APK download: [APK_DOWNLOAD_URL]
+
+
+## About
 
 GreenGarden is a React Native / Expo mobile app for managing plants — features include role-based access (admin / user), plant listing and categories, user profiles, image picker, and Firebase integration.
 
-Features
+## Features
 
-   Role-based UI (admin dashboard & user dashboard)
+   - Role-based UI (admin dashboard & user dashboard)
 
-   Add / edit / remove plants & categories (admin)
+   - Add / edit / remove plants & categories (admin)
 
-   User plant collection (user)
+   - User plant collection (user)
 
-   Profile image picker & authentication
+   - Profile image picker & authentication
 
-   Firebase integration for auth & storage
+   - Firebase integration for auth & storage
 
-   EAS / Expo build configuration included (eas.json)
-
-
-Tech stack
-
-   React Native (Expo)
-
-   TypeScript
-
-   Firebase (Auth, Firestore, Storage)
-
-   EAS (Expo Application Services)
-
-   Node.js & npm / yarn
+   - EAS / Expo build configuration included (eas.json)
 
 
-Run locally (development)
-   npm install
-   npx expo start
+## Tech stack
+
+   - React Native (Expo)
+
+   - TypeScript
+
+   - Firebase (Auth, Firestore, Storage)
+
+   - EAS (Expo Application Services)
+
+   - Node.js & npm / yarn
 
 
-Scan QR code with Expo Go (for development)
+## Run locally (development)
+   * npm install
+   * npx expo start
 
-Or run on Android emulator / iOS simulator
+
+### Scan QR code with Expo Go (for development)
+
+### Or run on Android emulator / iOS simulator
