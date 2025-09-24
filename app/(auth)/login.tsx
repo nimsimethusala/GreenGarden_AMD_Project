@@ -51,7 +51,7 @@ export default function LoginScreen() {
 
         // 3. Role-based redirection
         if (user.role === "admin") {
-        router.replace("/admin");
+        router.replace("/adminPlantScreen");
         } else {
         router.replace("/home");
         }

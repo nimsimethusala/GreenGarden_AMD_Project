@@ -1,27 +1,29 @@
 import React from 'react'
 import { Tabs } from 'expo-router'
 import { MaterialIcons } from "@expo/vector-icons"
+import { useTheme } from '@/context/ThemeContext'
 
 const tabs = [
     {label: 'Home', name: 'home', icon: "home-filled"},
     {label: 'My Plants', name: 'myPlant', icon: "add-circle"},
+    {label: 'Plants', name: 'plantScreen', icon: "local-florist"},
     {label: 'Profile', name: 'userProfile', icon: "person" }
 ] as const
 
 const UserDashboardRoutes = () => {
+  const { colors, currentTheme } = useTheme()
+
   return (
-    
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#03fcb5",
-        tabBarInactiveTintColor: "#5f736d",
+        tabBarActiveTintColor: colors.secondary_text,
+        tabBarInactiveTintColor: colors.accent,
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: "#001a12"
+          backgroundColor: colors.secondary_background
         }
       }}
     >
-      {/* (obj.name) ===  ({name}) */}
       {tabs.map(({ name, icon, label }) => (
         <Tabs.Screen
           key={name}
