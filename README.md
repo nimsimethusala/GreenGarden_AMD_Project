@@ -7,7 +7,7 @@
 
    #### YouTube demo: [YOUTUBE_VIDEO_URL]
 
-   #### APK download: [APK_DOWNLOAD_URL]
+   #### APK download: [https://drive.google.com/file/d/1-YXeulGfUjD_t-qGMid45XE9dzKtHTuQ/view?usp=drivesdk]
 
 
 ## About
@@ -16,17 +16,23 @@ GreenGarden is a React Native / Expo mobile app for managing plants — features
 
 ## Features
 
-   - Role-based UI (admin dashboard & user dashboard)
+   ##### Role-based UI (admin dashboard & user dashboard)
+   - The app has two types of users: Admin and User. Each role sees a different interface — admins can manage categories and plants, while users focus on their personal plant collection and also user can select favorite plants from global plants.
 
-   - Add / edit / remove plants & categories (admin)
+   ##### Add / edit / remove plants & categories (admin)
+   - Admins have full control over the plant database. They can create new categories (e.g., flowers, herbs), add new plants with details, update information, or delete entries.
 
-   - User plant collection (user)
+   ##### User plant collection (user)
+   - Regular users can maintain their own personalized list of plants. This allows them to track and manage only the plants they own or are interested in.
 
-   - Profile image picker & authentication
+   ##### Profile image picker & authentication
+   - Users can sign up, log in securely, and personalize their profile with an uploaded image using the built-in image picker.
 
-   - Firebase integration for auth & storage
+   ##### Firebase integration for auth & storage
+   - Firebase handles user authentication (sign up / login) and securely stores user data and images. This reduces backend complexity and ensures scalability.
 
-   - EAS / Expo build configuration included (eas.json)
+   ##### EAS / Expo build configuration included (eas.json)
+   - The project includes configuration for Expo Application Services (EAS), making it easy to generate APKs, publish updates, or build for both Android and iOS with just a few commands.
 
 
 ## Tech stack
