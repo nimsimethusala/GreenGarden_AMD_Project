@@ -21,7 +21,7 @@ import { UserProfile } from "@/types/User";
 import { getUser, updateUser, removeAvatar } from "@/services/userService";
 import HeaderSection from "@/components/section/HeaderSection";
 import { logout } from "@/services/authService";
-import { useRouter } from "@/.expo/types/router";
+import { useRouter } from "expo-router";
 
 const ProfileScreen = () => {
   const router = useRouter();
