@@ -7,7 +7,7 @@
 
    #### YouTube demo: [https://youtu.be/ptnJfsQZzoY]
 
-   #### APK download: [https://drive.google.com/file/d/1fmrkngvq8QGsGT-6_m2P-kFPH-vDLYHN/view?usp=drivesdk]
+   #### APK download: [https://drive.google.com/file/d/1fmrkngvq8QGsGT-6_m2P-kFPH-vDLYHN/view?usp=sharing]
 
 
 ## About
